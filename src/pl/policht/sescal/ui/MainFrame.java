@@ -1,24 +1,49 @@
 package pl.policht.sescal.ui;
 
 import java.awt.Dimension;
+import java.awt.List;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
+import javax.swing.JMenuItem;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import pl.policht.sescal.main.Factory;
+import pl.policht.sescal.main.ListObject;
+
 
 public class MainFrame extends JFrame {
 	private static MainFrame mf;
 	
+	private List myList;
+	private JTextField myJTextF;
+	private JTextField firExam;
+	private JTextField secExam;
+	private JButton butAdd;
+	private JButton butRem;
+	private JButton butSav;
+	
+	private ArrayList<ListObject> objectsList;
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
+	File file;
+	
 	private MainFrame() {
+		setLayout(null);
+		
 		Toolkit tk = getToolkit();
 		Dimension dim = tk.getScreenSize();
 		int x = dim.width;
@@ -35,8 +60,7 @@ public class MainFrame extends JFrame {
 		menuUstawienia.add(muSubmenu);
 		UIManager.LookAndFeelInfo[] themes = UIManager.getInstalledLookAndFeels();
 		for (UIManager.LookAndFeelInfo infos : themes)
-			muSubmenu.add(Factory.newJMenuItem(infos.getName()));
-		muSubmenu.getItem(1).setActionCommand(themes[1].getClassName().toString());
+			muSubmenu.add(createJMenuItem(infos.getName(), infos.getClassName()));
 		JMenu menuPomoc = new JMenu("Pomoc");
 		
 		menuBar.add(menuPlik);
@@ -44,22 +68,125 @@ public class MainFrame extends JFrame {
 		menuBar.add(menuPomoc);
 		
 		setJMenuBar(menuBar);
-		muSubmenu.addActionListener(new ActionListener() {
+		
+		myList = new List();
+		myList.setBounds(5, 5, x/4, y/4);
+		myList.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					UIManager.setLookAndFeel(e.getActionCommand());
-					System.out.println(e.getSource());
-					SwingUtilities.updateComponentTreeUI(MainFrame.this);
-				} catch (Exception ex) {
-				}
+				String tempstr = myList.getSelectedItem();
+				for (ListObject ol : objectsList)
+					if (tempstr.equals(ol.getName())){
+						myJTextF.setText(ol.getName());
+						firExam.setText(ol.getFirEx());
+						secExam.setText(ol.getSecEx());
+					}
 			}
 		});
+		myJTextF = new JTextField();
+		myJTextF.setBounds(x/4+5, 5, x/4-10, 30);
+		butAdd = new JButton("Dodaj");
+		butAdd.setBounds(x/4+5, 40, 80, 30);
+		butAdd.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				ListObject newLObject = new ListObject();
+				newLObject.setFirEx(myJTextF.getText());
+				newLObject.setSecEx(firExam.getText());
+				newLObject.setSecEx(secExam.getText());
+				objectsList.add(newLObject);
+				myList.add(myJTextF.getText());
+				if (objectsList.isEmpty()) new InfoClass();
+			}
+		});
+		butRem = new JButton("Usun");
+		butRem.setBounds(x/4+90, 40, 80, 30);
+		butRem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				myList.remove(myList.getSelectedItem());
+				
+			}
+		});
+		butSav = new JButton("Zapisz");
+		butSav.setBounds(x/4+175, 40, 80, 30);
+		butSav.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				sendListToFile(objectsList);
+			}
+		});
+		firExam = new JTextField();
+		firExam.setBounds(5, 10+y/4, x/4, 30);
+		secExam = new JTextField();
+		secExam.setBounds(5, 45+y/4, x/4, 30);
+		
+		add(myList);
+		add(myJTextF);
+		add(butAdd);
+		add(butRem);
+		add(butSav);
+		add(firExam);
+		add(secExam);
+		
+		objectsList = getListFromFile();
+		for (ListObject e : objectsList)
+			myList.add(e.getName());
 	}
 
 	public static MainFrame getMainFrame() {
 		if (mf == null)
 			mf = new MainFrame();
 		return mf;
+	}
+	
+	private JMenuItem createJMenuItem(String name, String actionCommand){
+		JMenuItem jmi = new JMenuItem(name);
+		jmi.setActionCommand(actionCommand);
+		jmi.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try{
+					UIManager.setLookAndFeel(arg0.getActionCommand());
+					SwingUtilities.updateComponentTreeUI(MainFrame.this);
+				}catch(Exception ex){}
+				
+			}
+		});
+		return jmi;
+	}
+	
+	private ArrayList<ListObject> getListFromFile(){
+		file = new File("listobject.dat");
+		ArrayList<ListObject> tempObjectsList = new ArrayList<ListObject>();
+		try{
+			if (!file.exists()) file.createNewFile();
+			ois = new ObjectInputStream(new FileInputStream(file));
+			ListObject[] tempList = (ListObject[]) ois.readObject();
+			ois.close();
+			for (ListObject e : tempList)
+				tempObjectsList.add(e);
+		}catch(Exception e){}
+		return tempObjectsList;
+	}
+	
+	private void sendListToFile(ArrayList<ListObject> tempObjectsList){
+		try{
+			file = new File("listobject.dat");
+			oos = new ObjectOutputStream(new FileOutputStream(file));
+			ListObject[] tempList = new ListObject[tempObjectsList.size()];
+			
+			for (int i = 1; i <= tempObjectsList.size(); i++ )
+				tempList[i-1] = (ListObject) tempObjectsList.get(i);
+			oos.writeObject(tempList);
+			oos.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }

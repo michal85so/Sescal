@@ -93,12 +93,11 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				ListObject newLObject = new ListObject();
-				newLObject.setFirEx(myJTextF.getText());
-				newLObject.setSecEx(firExam.getText());
+				newLObject.setName(myJTextF.getText());
+				newLObject.setFirEx(firExam.getText());
 				newLObject.setSecEx(secExam.getText());
 				objectsList.add(newLObject);
 				myList.add(myJTextF.getText());
-				if (objectsList.isEmpty()) new InfoClass();
 			}
 		});
 		butRem = new JButton("Usun");
@@ -108,6 +107,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				myList.remove(myList.getSelectedItem());
+				objectsList.remove(myList.getSelectedIndex());
 				
 			}
 		});
@@ -181,8 +181,8 @@ public class MainFrame extends JFrame {
 			oos = new ObjectOutputStream(new FileOutputStream(file));
 			ListObject[] tempList = new ListObject[tempObjectsList.size()];
 			
-			for (int i = 1; i <= tempObjectsList.size(); i++ )
-				tempList[i-1] = (ListObject) tempObjectsList.get(i);
+			for (int i = 0; i < tempObjectsList.size(); i++ )
+				tempList[i] = (ListObject) tempObjectsList.get(i);
 			oos.writeObject(tempList);
 			oos.close();
 		}catch(Exception e){

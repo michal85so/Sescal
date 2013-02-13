@@ -1,6 +1,8 @@
 package pl.policht.sescal.main;
 
-public class ListObject {
+import java.io.Serializable;
+
+public class ListObject implements Serializable{
 	private String name;
 	private String firEx;
 	private String secEx;
@@ -22,5 +24,8 @@ public class ListObject {
 	}
 	public String getSecEx(){
 		return secEx;
+	}
+	public String toString(){
+		return ("nazwa: " + name + "\npierwszy egzamin: " + firEx + "\ndrugi egzamin: " + secEx);
 	}
 }

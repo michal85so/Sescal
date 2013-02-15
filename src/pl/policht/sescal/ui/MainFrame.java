@@ -87,69 +87,21 @@ public class MainFrame extends JFrame {
 		});
 		myJTextF = new JTextField();
 		myJTextF.setBounds(x/4+5, 5, x/4-10, 30);
-		butAdd = new JButton("Dodaj");
-		butAdd.setBounds(x/4+5, 40, 80, 30);
-		butAdd.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (myList.getSelectedItem() == null) return;
-				ListObject newLObject = new ListObject();
-				newLObject.setName(myJTextF.getText());
-				newLObject.setFirEx(firExam.getText());
-				newLObject.setSecEx(secExam.getText());
-				objectsList.add(newLObject);
-				myList.add(myJTextF.getText());
-			}
-		});
-		butRem = new JButton("Usun");
-		butRem.setBounds(x/4+90, 40, 80, 30);
-		butRem.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (myList.getSelectedItem() == null) return;
-				String itemToRemove = myList.getSelectedItem();
-				myList.remove(myList.getSelectedItem());
-				Iterator<ListObject> it = objectsList.iterator();
-				while (it.hasNext()){
-					ListObject obj = it.next();
-					obj.getName();
-					if (itemToRemove.equals(obj.getName()))
-						it.remove();
-				}
-			}
-		});
-		butSav = new JButton("Zapisz");
-		butSav.setBounds(x/4+175, 40, 80, 30);
-		butSav.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (myList.getSelectedItem() != null){
-					int objIndex = 0;
-					String objToMod = myList.getSelectedItem();
-					for (ListObject lo : objectsList){
-						if (objToMod.equals(lo.getName()))
-							objIndex = objectsList.indexOf(lo);
-							
-					}
-					
-					
-					ListObject modLObject = new ListObject();
-					modLObject.setName(myJTextF.getText());
-					modLObject.setFirEx(firExam.getText());
-					modLObject.setSecEx(secExam.getText());
-					objectsList.set(objIndex, modLObject);
-					
-				}
-				sendListToFile(objectsList);
-			}
-		});
 		firExam = new JTextField();
 		firExam.setBounds(5, 10+y/4, x/4, 30);
 		secExam = new JTextField();
 		secExam.setBounds(5, 45+y/4, x/4, 30);
+		
+		butAdd = new JButton("Dodaj");
+		butAdd.setBounds(x/4+5, 40, 80, 30);
+		butAdd.addActionListener(new AddButtonListener());
+		butRem = new JButton("Usun");
+		butRem.setBounds(x/4+90, 40, 80, 30);
+		butRem.addActionListener(new RemButtonListener());
+		butSav = new JButton("Zapisz");
+		butSav.setBounds(x/4+175, 40, 80, 30);
+		butSav.addActionListener(new SavButtonListener());
+		
 		
 		add(myList);
 		add(myJTextF);
@@ -220,7 +172,51 @@ public class MainFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
+			if (myJTextF == null) return;
+			ListObject newLObject = new ListObject();
+			newLObject.setName(myJTextF.getText());
+			newLObject.setFirEx(firExam.getText());
+			newLObject.setSecEx(secExam.getText());
+			objectsList.add(newLObject);
+			myList.add(myJTextF.getText());
+		}
+	}
+	
+	private class RemButtonListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (myList.getSelectedItem() == null) return;
+			String itemToRemove = myList.getSelectedItem();
+			myList.remove(myList.getSelectedItem());
+			Iterator<ListObject> it = objectsList.iterator();
+			while (it.hasNext()){
+				ListObject obj = it.next();
+				obj.getName();
+				if (itemToRemove.equals(obj.getName()))
+					it.remove();
+			}
+		}
+	}
+	
+	private class SavButtonListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (myList.getSelectedItem() != null){
+				int objIndex = 0;
+				String objToMod = myList.getSelectedItem();
+				for (ListObject lo : objectsList){
+					if (objToMod.equals(lo.getName()))
+						objIndex = objectsList.indexOf(lo);		
+				}
+				ListObject modLObject = new ListObject();
+				modLObject.setName(myJTextF.getText());
+				modLObject.setFirEx(firExam.getText());
+				modLObject.setSecEx(secExam.getText());
+				objectsList.set(objIndex, modLObject);
+			}
+			sendListToFile(objectsList);
 		}
 	}
 }

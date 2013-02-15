@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -92,6 +93,7 @@ public class MainFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				if (myList.getSelectedItem() == null) return;
 				ListObject newLObject = new ListObject();
 				newLObject.setName(myJTextF.getText());
 				newLObject.setFirEx(firExam.getText());
@@ -106,9 +108,16 @@ public class MainFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (myList.getSelectedItem() == null) return;
+				String itemToRemove = myList.getSelectedItem();
 				myList.remove(myList.getSelectedItem());
-				objectsList.remove(myList.getSelectedIndex());
-				
+				Iterator<ListObject> it = objectsList.iterator();
+				while (it.hasNext()){
+					ListObject obj = it.next();
+					obj.getName();
+					if (itemToRemove.equals(obj.getName()))
+						it.remove();
+				}
 			}
 		});
 		butSav = new JButton("Zapisz");
@@ -117,6 +126,23 @@ public class MainFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				if (myList.getSelectedItem() != null){
+					int objIndex = 0;
+					String objToMod = myList.getSelectedItem();
+					for (ListObject lo : objectsList){
+						if (objToMod.equals(lo.getName()))
+							objIndex = objectsList.indexOf(lo);
+							
+					}
+					
+					
+					ListObject modLObject = new ListObject();
+					modLObject.setName(myJTextF.getText());
+					modLObject.setFirEx(firExam.getText());
+					modLObject.setSecEx(secExam.getText());
+					objectsList.set(objIndex, modLObject);
+					
+				}
 				sendListToFile(objectsList);
 			}
 		});
@@ -187,6 +213,14 @@ public class MainFrame extends JFrame {
 			oos.close();
 		}catch(Exception e){
 			e.printStackTrace();
+		}
+	}
+	
+	private class AddButtonListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			
 		}
 	}
 }

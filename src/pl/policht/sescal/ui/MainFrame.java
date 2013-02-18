@@ -1,6 +1,8 @@
 package pl.policht.sescal.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.List;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -19,7 +21,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -29,21 +33,35 @@ import pl.policht.sescal.main.ListObject;
 public class MainFrame extends JFrame {
 	private static MainFrame mf;
 	
+	private JPanel layNorth;
+	private JPanel layWest;
+	private JPanel layCenter;
+	private JPanel laySouth;
+	
 	private List myList;
 	private JTextField myJTextF;
 	private JTextField firExam;
 	private JTextField secExam;
+	private JButton butNew;
 	private JButton butAdd;
 	private JButton butRem;
 	private JButton butSav;
+	private JLabel labMyJTestF;
+	private JLabel labFirExam;
+	private JLabel labSecExam;
 	
 	private ArrayList<ListObject> objectsList;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-	File file;
+	private File file;
 	
 	private MainFrame() {
-		setLayout(null);
+		setLayout(new BorderLayout());
+		layNorth = new JPanel();
+		layWest = new JPanel();
+		layCenter = new JPanel();
+		laySouth = new JPanel();
+		layCenter.setLayout(new GridLayout(3, 2));
 		
 		Toolkit tk = getToolkit();
 		Dimension dim = tk.getScreenSize();
@@ -70,8 +88,7 @@ public class MainFrame extends JFrame {
 		
 		setJMenuBar(menuBar);
 		
-		myList = new List();
-		myList.setBounds(5, 5, x/4, y/4);
+		myList = new List(15);
 		myList.addActionListener(new ActionListener() {
 			
 			@Override
@@ -85,31 +102,44 @@ public class MainFrame extends JFrame {
 					}
 			}
 		});
-		myJTextF = new JTextField();
-		myJTextF.setBounds(x/4+5, 5, x/4-10, 30);
-		firExam = new JTextField();
-		firExam.setBounds(5, 10+y/4, x/4, 30);
-		secExam = new JTextField();
-		secExam.setBounds(5, 45+y/4, x/4, 30);
+		myJTextF = new JTextField(40);
+		labMyJTestF = new JLabel("Nazwa Przedmiotu", SwingConstants.RIGHT);
+		firExam = new JTextField(40);
+		labFirExam = new JLabel("Pierwszy examin", SwingConstants.RIGHT);
+		secExam = new JTextField(40);
+		labSecExam = new JLabel("Drugi examin", JLabel.RIGHT);
 		
+		butNew = new JButton("Nowy");
+		butNew.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				myJTextF.setText(null);
+				firExam.setText(null);
+				secExam.setText(null);
+			}
+		});
 		butAdd = new JButton("Dodaj");
-		butAdd.setBounds(x/4+5, 40, 80, 30);
 		butAdd.addActionListener(new AddButtonListener());
 		butRem = new JButton("Usun");
-		butRem.setBounds(x/4+90, 40, 80, 30);
 		butRem.addActionListener(new RemButtonListener());
 		butSav = new JButton("Zapisz");
-		butSav.setBounds(x/4+175, 40, 80, 30);
 		butSav.addActionListener(new SavButtonListener());
 		
-		
-		add(myList);
-		add(myJTextF);
-		add(butAdd);
-		add(butRem);
-		add(butSav);
-		add(firExam);
-		add(secExam);
+		layWest.add(myList);
+		add(layWest, BorderLayout.WEST);
+		layNorth.add(butNew);
+		layNorth.add(butAdd);
+		layNorth.add(butRem);
+		layNorth.add(butSav);
+		add(layNorth, BorderLayout.NORTH);
+		layCenter.add(myJTextF);
+		layCenter.add(labMyJTestF);
+		layCenter.add(firExam);
+		layCenter.add(labFirExam);
+		layCenter.add(secExam);
+		layCenter.add(labSecExam);
+		add(layCenter, BorderLayout.CENTER);
 		
 		objectsList = getListFromFile();
 		for (ListObject e : objectsList)

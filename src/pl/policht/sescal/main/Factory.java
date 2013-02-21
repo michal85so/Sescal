@@ -1,11 +1,8 @@
 package pl.policht.sescal.main;
 
-import javax.swing.JMenuItem;
 
-public class Factory {
-	private Factory(){}
+public final class Factory {
 	
-	public static JMenuItem newJMenuItem(String name){
-		return new JMenuItem(name);
-	}
+	public static final String saveAfterEditInfo = "Pamietaj aby zapisać dane po zmianie każdego elementu!";
+	//public static final String 
 }

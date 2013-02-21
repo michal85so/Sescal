@@ -1,6 +1,7 @@
 package pl.policht.sescal.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.List;
@@ -15,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,7 +28,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 
+import pl.policht.sescal.main.Factory;
 import pl.policht.sescal.main.ListObject;
 
 
@@ -42,6 +46,7 @@ public class MainFrame extends JFrame {
 	private JTextField myJTextF;
 	private JTextField firExam;
 	private JTextField secExam;
+	private JTextField thiExam;
 	private JButton butNew;
 	private JButton butAdd;
 	private JButton butRem;
@@ -49,6 +54,8 @@ public class MainFrame extends JFrame {
 	private JLabel labMyJTestF;
 	private JLabel labFirExam;
 	private JLabel labSecExam;
+	private JLabel labThiExam;
+	private JLabel labInfo;
 	
 	private ArrayList<ListObject> objectsList;
 	private ObjectInputStream ois;
@@ -61,7 +68,7 @@ public class MainFrame extends JFrame {
 		layWest = new JPanel();
 		layCenter = new JPanel();
 		laySouth = new JPanel();
-		layCenter.setLayout(new GridLayout(3, 2));
+		layCenter.setLayout(new GridLayout(4, 2));
 		
 		Toolkit tk = getToolkit();
 		Dimension dim = tk.getScreenSize();
@@ -99,15 +106,20 @@ public class MainFrame extends JFrame {
 						myJTextF.setText(ol.getName());
 						firExam.setText(ol.getFirEx());
 						secExam.setText(ol.getSecEx());
+						thiExam.setText(ol.getThiEx());
+						labInfo.setText(Factory.saveAfterEditInfo);
 					}
 			}
 		});
+		
 		myJTextF = new JTextField(40);
 		labMyJTestF = new JLabel("Nazwa Przedmiotu", SwingConstants.RIGHT);
 		firExam = new JTextField(40);
-		labFirExam = new JLabel("Pierwszy examin", SwingConstants.RIGHT);
+		labFirExam = new JLabel("Pierwszy termin examinu", SwingConstants.RIGHT);
 		secExam = new JTextField(40);
-		labSecExam = new JLabel("Drugi examin", JLabel.RIGHT);
+		labSecExam = new JLabel("Drugi drugi termin examinu", JLabel.RIGHT);
+		thiExam = new JTextField(40);
+		labThiExam = new JLabel("Examin w sesji poprawkowej", JLabel.RIGHT);
 		
 		butNew = new JButton("Nowy");
 		butNew.addActionListener(new ActionListener() {
@@ -117,6 +129,7 @@ public class MainFrame extends JFrame {
 				myJTextF.setText(null);
 				firExam.setText(null);
 				secExam.setText(null);
+				thiExam.setText(null);
 			}
 		});
 		butAdd = new JButton("Dodaj");
@@ -126,12 +139,16 @@ public class MainFrame extends JFrame {
 		butSav = new JButton("Zapisz");
 		butSav.addActionListener(new SavButtonListener());
 		
+		labInfo = new JLabel("Witaj w Sescal :)");
+		
 		layWest.add(myList);
+		createSwingBorder(layWest, "Lista przedmiotów");
 		add(layWest, BorderLayout.WEST);
 		layNorth.add(butNew);
 		layNorth.add(butAdd);
 		layNorth.add(butRem);
 		layNorth.add(butSav);
+		createSwingBorder(layNorth, "Menu");
 		add(layNorth, BorderLayout.NORTH);
 		layCenter.add(myJTextF);
 		layCenter.add(labMyJTestF);
@@ -139,7 +156,14 @@ public class MainFrame extends JFrame {
 		layCenter.add(labFirExam);
 		layCenter.add(secExam);
 		layCenter.add(labSecExam);
+		layCenter.add(thiExam);
+		layCenter.add(labThiExam);
+		createSwingBorder(layCenter, "Opis przedmiotu");
 		add(layCenter, BorderLayout.CENTER);
+		laySouth.add(labInfo);
+		createSwingBorder(laySouth, "Informacja");
+		add(laySouth, BorderLayout.SOUTH);
+		pack();
 		
 		objectsList = getListFromFile();
 		for (ListObject e : objectsList)
@@ -203,10 +227,14 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (myJTextF == null) return;
+			for (ListObject lo : objectsList)
+				if (myJTextF.getText().equals(lo.getName()))
+					return;
 			ListObject newLObject = new ListObject();
 			newLObject.setName(myJTextF.getText());
 			newLObject.setFirEx(firExam.getText());
 			newLObject.setSecEx(secExam.getText());
+			newLObject.setThiEx(thiExam.getText());
 			objectsList.add(newLObject);
 			myList.add(myJTextF.getText());
 		}
@@ -244,9 +272,16 @@ public class MainFrame extends JFrame {
 				modLObject.setName(myJTextF.getText());
 				modLObject.setFirEx(firExam.getText());
 				modLObject.setSecEx(secExam.getText());
+				modLObject.setThiEx(thiExam.getText());
 				objectsList.set(objIndex, modLObject);
 			}
 			sendListToFile(objectsList);
 		}
+	}
+	
+	private void createSwingBorder(JPanel panel, String text){
+		//Border newBorder = BorderFactory.createLineBorder(Color.BLACK);
+		Border newTitledBorder = BorderFactory.createTitledBorder(text);
+		panel.setBorder(newTitledBorder);
 	}
 }

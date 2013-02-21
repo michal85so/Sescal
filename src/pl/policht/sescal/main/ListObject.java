@@ -6,6 +6,9 @@ public class ListObject implements Serializable{
 	private String name;
 	private String firEx;
 	private String secEx;
+	private String thiEx;
+	private int avr;
+	private int ectsIm;
 	
 	public void setName(String name){
 		this.name = name;
@@ -25,6 +28,25 @@ public class ListObject implements Serializable{
 	public String getSecEx(){
 		return secEx;
 	}
+	public void setThiEx(String thiEx){
+		this.thiEx = thiEx;
+	}
+	public String getThiEx(){
+		return thiEx;
+	}
+	public void setAvr(int avr){
+		this.avr = avr;
+	}
+	public int getAvr(){
+		return avr;
+	}
+	public void setEctsIm(int ectsIm){
+		this.ectsIm = ectsIm;
+	}
+	public int getEctsIm(){
+		return ectsIm;
+	}
+	
 	public String toString(){
 		return ("nazwa: " + name + "\npierwszy egzamin: " + firEx + "\ndrugi egzamin: " + secEx);
 	}

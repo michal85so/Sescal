@@ -18,7 +18,7 @@ public class Sescal {
 			@Override
 			public void run() {
 				final MainFrame mf = MainFrame.getMainFrame();
-				//mf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				mf.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				mf.setVisible(true);
 				mf.addWindowListener(new WindowAdapter() {
 					@Override
@@ -26,8 +26,6 @@ public class Sescal {
 						int selection = JOptionPane.showConfirmDialog(null, "Czy napewno chcesz wyjść z aplikacji Sescal?", "Uwaga", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 						if (selection == JOptionPane.OK_OPTION)
 							System.exit(0);
-						else
-							mf.setVisible(true);
 					}
 				});
 			}
